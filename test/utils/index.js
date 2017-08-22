@@ -7,13 +7,13 @@ var path = require("path");
 var extend = require("lodash").extend;
 var cp = require("child_process");
 
-var fxRunner = path.join(__dirname, "../../bin/fx-runner");
+var tbRunner = path.join(__dirname, "../../bin/tb-runner");
 
 function exec (args, options, callback) {
   options = options || {};
   var env = extend({}, options.env, process.env);
 
-  return cp.exec("node " + fxRunner + " " + args, {
+  return cp.exec("node " + tbRunner + " " + args, {
     cwd: options.cwd || __dirname,
     env: env
   }, function (err, stdout, stderr) {

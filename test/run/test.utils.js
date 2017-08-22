@@ -63,8 +63,8 @@ describe("lib/utils", function () {
     }).normalizeBinary;
 
     var promises = [
-      [[null, "windows", "x86"], path.join(envPath32, "Mozilla Firefox", "firefox.exe")],
-      [[null, "windows", "x86_64"], path.join(envPath64, "Mozilla Firefox", "firefox.exe")]
+      [[null, "windows", "x86"], path.join(envPath32, "Mozilla Thunderbird", "thunderbird.exe")],
+      [[null, "windows", "x86_64"], path.join(envPath64, "Mozilla Thunderbird", "thunderbird.exe")]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -75,13 +75,13 @@ describe("lib/utils", function () {
   });
 
   it("normalizeBinary() default sets (OS X)", function (done) {
-    delete process.env.JPM_FIREFOX_BINARY;
+    delete process.env.JPM_THUNDERBIRD_BINARY;
     var args = 0;
     var expected = 1;
 
     var promises = [
-      [[null, "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
-      [[null, "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"]
+      [[null, "darwin", "x86"], "/Applications/Thunderbird.app/Contents/MacOS/thunderbird"],
+      [[null, "darwin", "x86_64"], "/Applications/Thunderbird.app/Contents/MacOS/thunderbird"]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -92,7 +92,7 @@ describe("lib/utils", function () {
   });
 
   it("normalizeBinary() default sets (linux)", function (done) {
-    delete process.env.JPM_FIREFOX_BINARY;
+    delete process.env.JPM_THUNDERBIRD_BINARY;
     var args = 0;
     var expected = 1;
 
@@ -105,8 +105,8 @@ describe("lib/utils", function () {
     }).normalizeBinary;
 
     var promises = [
-      [[null, "linux", "x86"], "/usr/bin/firefox"],
-      [[null, "linux", "x86_64"], "/usr/bin/firefox"]
+      [[null, "linux", "x86"], "/usr/bin/thunderbird"],
+      [[null, "linux", "x86_64"], "/usr/bin/thunderbird"]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -124,22 +124,22 @@ describe("lib/utils", function () {
   });
 
   it("normalizeBinary() finds OSX's full path when given .app", function (done) {
-    process.env.JPM_FIREFOX_BINARY = undefined;
-    binary("/Application/FirefoxNightly.app", "darwin").then(function(actual) {
+    process.env.JPM_THUNDERBIRD_BINARY = undefined;
+    binary("/Application/Daily.app", "darwin").then(function(actual) {
       expect(actual).to.be.equal(
-        path.join("/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin"));
+        path.join("/Application/Daily.app/Contents/MacOS/thunderbird"));
     }).then(done.bind(null, null), done);
   });
 
-  it("normalizeBinary() uses JPM_FIREFOX_BINARY if no path specified", function (done) {
-    process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
+  it("normalizeBinary() uses JPM_THUNDERBIRD_BINARY if no path specified", function (done) {
+    process.env.JPM_THUNDERBIRD_BINARY = "/my/custom/path";
     binary().then(function(actual) {
       expect(actual).to.be.equal("/my/custom/path");
     }).then(done.bind(null, null), done);
   });
 
-  it("normalizeBinary() uses path over JPM_FIREFOX_BINARY if specified", function (done) {
-    process.env.JPM_FIREFOX_BINARY = "/my/custom/path";
+  it("normalizeBinary() uses path over JPM_THUNDERBIRD_BINARY if specified", function (done) {
+    process.env.JPM_THUNDERBIRD_BINARY = "/my/custom/path";
     binary("/specific/path").then(function(actual) {
       expect(actual).to.be.equal("/specific/path");
     }).then(done.bind(null, null), done);
@@ -152,11 +152,8 @@ describe("lib/utils", function () {
     var binary = sandbox.require("../../lib/utils", {
       requires: {"winreg": function(options) {
         var value = "Normal or beta";
-        if (options.key.toLowerCase().indexOf("nightly") != -1) {
+        if (options.key.toLowerCase().indexOf("daily") != -1) {
           value = "nightly";
-        }
-        if (options.key.toLowerCase().indexOf("aurora") != -1) {
-          value = "aurora";
         }
         this.get = function(_, fn) {
           fn(null, {value: value});
@@ -168,8 +165,6 @@ describe("lib/utils", function () {
     var promises = [
       [["nightly", "windows", "x86"], "nightly"],
       [["nightly", "windows", "x86_64"], "nightly"],
-      [["aurora", "windows", "x86"], "aurora"],
-      [["aurora", "windows", "x86_64"], "aurora"]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -179,7 +174,7 @@ describe("lib/utils", function () {
     all(promises).then(done.bind(null, null), done);
   });
 
-  it("normalizeBinary() normalizes special names like: firefox, nightly, etc... on Linux", function(done) {
+  it("normalizeBinary() normalizes special names like: thunderbird, nightly, etc... on Linux", function(done) {
     var args = 0;
     var expected = 1;
 
@@ -192,17 +187,14 @@ describe("lib/utils", function () {
     }).normalizeBinary;
 
     var promises = [
-      [["firefox", "linux", "x86"], "/usr/bin/firefox"],
-      [["firefox", "linux", "x86_64"], "/usr/bin/firefox"],
+      [["thunderbird", "linux", "x86"], "/usr/bin/thunderbird"],
+      [["thunderbird", "linux", "x86_64"], "/usr/bin/thunderbird"],
 
-      [["beta", "linux", "x86"], "/usr/bin/firefox-beta"],
-      [["beta", "linux", "x86_64"], "/usr/bin/firefox-beta"],
+      [["beta", "linux", "x86"], "/usr/bin/thunderbird-beta"],
+      [["beta", "linux", "x86_64"], "/usr/bin/thunderbird-beta"],
 
-      [["aurora", "linux", "x86"], "/usr/bin/firefox-aurora"],
-      [["aurora", "linux", "x86_64"], "/usr/bin/firefox-aurora"],
-
-      [["nightly", "linux", "x86_64"], "/usr/bin/firefox-nightly"],
-      [["nightly", "linux", "x86_64"], "/usr/bin/firefox-nightly"],
+      [["nightly", "linux", "x86_64"], "/usr/bin/thunderbird-nightly"],
+      [["nightly", "linux", "x86_64"], "/usr/bin/thunderbird-nightly"],
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -212,25 +204,19 @@ describe("lib/utils", function () {
     all(promises).then(done.bind(null, null), done);
   });
 
-  it("normalizeBinary() normalizes special names like: firefox, nightly, etc... on OS X", function(done) {
+  it("normalizeBinary() normalizes special names like: thunderbird, nightly, etc... on OS X", function(done) {
     var args = 0;
     var expected = 1;
 
     var promises = [
-      [["firefox", "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
-      [["firefox", "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
+      [["thunderbird", "darwin", "x86"], "/Applications/Thunderbird.app/Contents/MacOS/thunderbird"],
+      [["thunderbird", "darwin", "x86_64"], "/Applications/Thunderbird.app/Contents/MacOS/thunderbird"],
 
-      [["beta", "darwin", "x86"], "/Applications/FirefoxBeta.app/Contents/MacOS/firefox-bin"],
-      [["beta", "darwin", "x86_64"], "/Applications/FirefoxBeta.app/Contents/MacOS/firefox-bin"],
+      [["beta", "darwin", "x86"], "/Applications/ThunderbirdBeta.app/Contents/MacOS/thunderbird"],
+      [["beta", "darwin", "x86_64"], "/Applications/ThunderbirdBeta.app/Contents/MacOS/thunderbird"],
 
-      [["firefoxdeveloperedition", "darwin", "x86"], "/Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox-bin"],
-      [["firefoxdeveloperedition", "darwin", "x86_64"], "/Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox-bin"],
-
-      [["aurora", "darwin", "x86"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin"],
-      [["aurora", "darwin", "x86_64"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin"],
-
-      [["nightly", "darwin", "x86"], "/Applications/FirefoxNightly.app/Contents/MacOS/firefox-bin"],
-      [["nightly", "darwin", "x86_64"], "/Applications/FirefoxNightly.app/Contents/MacOS/firefox-bin"]
+      [["nightly", "darwin", "x86"], "/Applications/Daily.app/Contents/MacOS/thunderbird"],
+      [["nightly", "darwin", "x86_64"], "/Applications/Daily.app/Contents/MacOS/thunderbird"]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -242,7 +228,7 @@ describe("lib/utils", function () {
 
   describe("findMacAppByChannel", function() {
 
-    var defaultNightly = "/Applications/FirefoxNightly.app/Contents/MacOS/firefox-bin";
+    var defaultNightly = "/Applications/Daily.app/Contents/MacOS/thunderbird";
 
     function spawnSyncStub(stdout) {
       return function() {
@@ -265,7 +251,7 @@ describe("lib/utils", function () {
     it("prefers to find the default app", function() {
       var result = utils.findMacAppByChannel("nightly", {
         spawnSync: spawnSyncStub([
-          "/src/mozilla-central/Nightly.app/Contents/MacOS/firefox-bin",
+          "/src/mozilla-central/Nightly.app/Contents/MacOS/thunderbird",
           defaultNightly,
         ].join("\n")),
       });
@@ -273,7 +259,7 @@ describe("lib/utils", function () {
     });
 
     it("falls back to the first app result", function() {
-      var randomApp = "/src/mozilla-central/Nightly.app/Contents/MacOS/firefox-bin";
+      var randomApp = "/src/mozilla-central/Nightly.app/Contents/MacOS/thunderbird";
       var result = utils.findMacAppByChannel("nightly", {
         spawnSync: spawnSyncStub(randomApp + "\n"),
       });
