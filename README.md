@@ -1,6 +1,6 @@
 # Thunderbird Runner
 
-[![Build Status](http://img.shields.io/travis/standard8/node-tb-runner.svg?style=flat-square)](https://travis-ci.org/standard8/node-tb-runner)
+[![Build Status](http://img.shields.io/travis/Standard8/node-tb-runner.svg?&style=flat-square)](https://travis-ci.org/Standard8/node-tb-runner)
 [![Build Status](http://img.shields.io/npm/v/tb-runner.svg?style=flat-square)](https://www.npmjs.org/package/tb-runner)
 
 [![NPM](https://nodei.co/npm/tb-runner.png?stars&downloads)](https://nodei.co/npm/tb-runner/)
